@@ -213,7 +213,7 @@ public class PlayerInstance(PlayerGameData data)
         Data.ShowItems[index - 1] = itemId;
     }
 
-    private static uint ToPackedAttrKey(uint gid, uint sid)
+    public uint ToPackedAttrKey(uint gid, uint sid)
     {
         if (gid == 0)
             return sid;
@@ -221,7 +221,7 @@ public class PlayerInstance(PlayerGameData data)
         return (gid * 10000) + sid;
     }
 
-    private static uint ToShiftedAttrKey(uint gid, uint sid)
+    public uint ToShiftedAttrKey(uint gid, uint sid)
     {
         if (gid == 0)
             return sid;
@@ -272,6 +272,9 @@ public class PlayerInstance(PlayerGameData data)
             yield return (21, levelId, 7);
             yield return (22, levelId, 1_700_000_000);
         }
+
+        // Main Scene 0 mean default scene
+        yield return (132, 1, 0);
     }
     #endregion
 }
