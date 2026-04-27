@@ -22,7 +22,7 @@ public class CharacterInfo
     public int Trust { get; set; }
     public uint WeaponUniqueId { get; set; }
     public uint SkinId { get; set; }
-    public ItemFlagEnum Flag { get; set; }
+    public ItemFlagEnum Flag { get; set; } = ItemFlagEnum.FLAG_READED;
     public uint Expiration { get; set; }
     [SugarColumn(IsJson = true)] public List<uint> UnlockedSkin { get; set; } = [];
     [SugarColumn(IsJson = true)] public List<uint> Spines { get; set; } = [];

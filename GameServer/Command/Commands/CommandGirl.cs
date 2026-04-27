@@ -14,7 +14,6 @@ public class CommandGirl : ICommands
     public async ValueTask AddGirl(CommandArg arg)
     {
         if (!await arg.CheckOnlineTarget()) return;
-        if (!await arg.CheckArgCnt(1)) return;
         if (await arg.GetOption('p') is not int particular) return;
         if (await arg.GetOption('l') is not int level) return;
         if (await arg.GetOption('s') is not int star) return;
@@ -29,7 +28,7 @@ public class CommandGirl : ICommands
             // add all
             foreach (var config in GameData.CardData.Values)
             {
-                var character = await arg.Target!.Player!.CharacterManager!
+                var character = await player.CharacterManager!
                     .AddCharacter((ItemTypeEnum)config.Genre, config.Detail, config.Particular, config.Level,(uint)star,false);
                 if (character != null) girls.Add(character);
             }

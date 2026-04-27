@@ -82,6 +82,7 @@ public class CommandTextEN
     public NoticeTextEN Notice { get; } = new();
     public HelpTextEN Help { get; } = new();
     public GirlTextEN Girl { get; } = new();
+    public GiveAllTextEN GiveAll { get; } = new();
 }
 
 #endregion
@@ -191,6 +192,18 @@ public class GirlTextEN
     public string NotFound => "Character not found!";
     public string Added => "Granted {0} character(s) to player!";
     public string UpdateLevel => "Set {1} character(s) to level {0}!";
+}
+
+/// <summary>
+///     path: Game.Command.GiveAll
+/// </summary>
+public class GiveAllTextEN
+{
+    public string Desc => "Give all items to player\n"+
+                          "Note: -1 means all";
+    public string Usage => "Usage: /giveall weapon <detail/-1> -p<particular> -l<level>";
+    public string WeaponNotFound => "Weapon not found!";
+    public string WeaponAdded => "Added {0} weapon(s) to player!";
 }
 
 #endregion

@@ -52,19 +52,15 @@ public class PlayerInstance(PlayerGameData data)
             await InitialPlayerManager();
             foreach (var skinCard in GameData.CardSkinData.Values)
             {
-                await InventoryManager.AddSkinItem((ItemTypeEnum)skinCard.Genre, skinCard.Detail, skinCard.Particular, skinCard.Level);
-            }
-            foreach (var weapon in GameData.WeaponData.Values)
-            {
-                await InventoryManager.AddWeaponItem((ItemTypeEnum)weapon.Genre, weapon.Detail, weapon.Particular, weapon.Level);
+                await InventoryManager.AddSkinItem((ItemTypeEnum)skinCard.Genre, skinCard.Detail, skinCard.Particular, skinCard.Level, false);
             }
             foreach (var ar in GameData.ArItemData.Values)
             {
-                await InventoryManager.AddArItem((ItemTypeEnum)ar.Genre, ar.Detail, ar.Particular, ar.Level);
+                await InventoryManager.AddArItem((ItemTypeEnum)ar.Genre, ar.Detail, ar.Particular, ar.Level, false);
             }
             foreach (var manifest in GameData.ManifestationData.Values)
             {
-                await InventoryManager.AddManifestationItem((ItemTypeEnum)manifest.Genre, manifest.Detail, manifest.Particular, manifest.Level);
+                await InventoryManager.AddManifestationItem((ItemTypeEnum)manifest.Genre, manifest.Detail, manifest.Particular, manifest.Level, false);
             }
             foreach (var card in GameData.CardData.Values)
             {
@@ -72,7 +68,7 @@ public class PlayerInstance(PlayerGameData data)
             }
             foreach (var supplies in GameData.AllSuppliesData)
             {
-                await InventoryManager.AddSuppliesItem(supplies, 90000);
+                await InventoryManager.AddSuppliesItem(supplies, 90000, false);
             }
 
             var selected = CharacterManager.CharacterData.Characters
@@ -81,7 +77,7 @@ public class PlayerInstance(PlayerGameData data)
                 .Select(x => x.Guid)
                 .ToList();
 
-            await LineupManager.UpdateLineup(1, selected[0], selected[1], selected[2]);
+            await LineupManager.UpdateLineup(1, selected[0], selected[1], selected[2],false);
 
             var bootstrapAttrs = BuildLobbyBootstrapAttrs();
             var existingAttrs = Data.Attrs
@@ -149,7 +145,7 @@ public class PlayerInstance(PlayerGameData data)
     {
         foreach (var supplies in GameData.AllSuppliesData)
         {
-            await InventoryManager.AddSuppliesItem(supplies, 90000);
+            await InventoryManager.AddSuppliesItem(supplies, 90000, false);
         }
     }
 
@@ -241,12 +237,7 @@ public class PlayerInstance(PlayerGameData data)
             Solutions = { LineupManager.LineupData.LineupInfo.Values.Select(x => x.ToProto()) },
         };
 
-        foreach (var item in InventoryManager.InventoryData.Items.Values)
-            if ((item.TemplateId & 0xFFFF) != 5) proto.Items.Add(item.ToProto());
-        foreach (var weapon in InventoryManager.InventoryData.Weapons.Values) proto.Items.Add(weapon.ToProto());
-        foreach (var skin in InventoryManager.InventoryData.Skins.Values) proto.Items.Add(skin.ToProto());
         foreach (var chara in CharacterManager.CharacterData.Characters) proto.Items.Add(chara.ToProto());
-
         foreach (var x in Data.Attrs)
         {
             uint gid = x.Gid;

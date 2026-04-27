@@ -24,7 +24,8 @@ public class BaseGameItemInfo
     public uint UniqueId { get; set; }
     public ulong TemplateId { get; set; }
     public uint ItemCount { get; set; }
-    public ItemFlagEnum Flag { get; set; }
+    public ItemTypeEnum ItemType { get; set; }
+    public ItemFlagEnum Flag { get; set; } = ItemFlagEnum.FLAG_READED;
 
     public virtual Item ToProto()
     {

@@ -22,12 +22,6 @@ public class Lineup_Update : ICallGSHandler
             await CallGSRouter.SendScript(connection, "UpdateLineup", "{}");
             return;
         }
-
-        var rsp = new NtfSyncLineup 
-        { 
-            Lineup = formation.ToProto()
-        };
-        await connection.SendPacket(CmdIds.NtfSyncLineup, rsp);
         await CallGSRouter.SendScript(connection, "UpdateLineup", "{}");
     }
 }

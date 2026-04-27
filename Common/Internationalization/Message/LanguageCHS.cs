@@ -120,6 +120,7 @@ public class CommandTextCHS
     public NoticeTextCHS Notice { get; } = new();
     public HelpTextCHS Help { get; } = new();
     public GirlTextCHS Girl { get; } = new();
+    public GiveAllTextCHS GiveAll { get; } = new();
 }
 
 #endregion
@@ -222,6 +223,18 @@ public class GirlTextCHS
     public string NotFound => "角色不存在！";
     public string Added => "已为玩家添加 {0} 个角色！";
     public string UpdateLevel => "已将 {1} 个角色等级设置为 {0}！";
+}
+
+/// <summary>
+///     path: Game.Command.GiveAll
+/// </summary>
+public class GiveAllTextCHS
+{
+    public string Desc => "给玩家所有物品\n" +
+                          "备注: -1 代表全部";
+    public string Usage => "用法: /giveall weapon <detail/-1> -p<particular> -l<level>";
+    public string WeaponNotFound => "找不到武器！";
+    public string WeaponAdded => "已添加 {0} 把武器给玩家！";
 }
 
 #endregion

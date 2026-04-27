@@ -24,15 +24,14 @@ public class CharacterManager(PlayerInstance player) : BasePlayerManager(player)
             TemplateId = characterId,
             Level = level,
             Break = star,
-            Timestamp = Extensions.GetUnixSec(),
-            Flag = ItemFlagEnum.FLAG_READED
+            Timestamp = Extensions.GetUnixSec()
         };
 
-        var weaponInfo = await Player.InventoryManager!.AddWeaponItem((ItemTypeEnum)CharacterExcel.DefaultWeaponGPDL[0], CharacterExcel.DefaultWeaponGPDL[1], CharacterExcel.DefaultWeaponGPDL[2], (uint)CharacterExcel.DefaultWeaponGPDL[3]);
+        var weaponInfo = await Player.InventoryManager!.AddWeaponItem((ItemTypeEnum)CharacterExcel.DefaultWeaponGPDL[0], CharacterExcel.DefaultWeaponGPDL[1], CharacterExcel.DefaultWeaponGPDL[2], CharacterExcel.DefaultWeaponGPDL[3],sendPacket:false);
         if (weaponInfo != null) character.WeaponUniqueId = weaponInfo.UniqueId;
 
-        var skinInfo = Player.InventoryManager!.GetSkinItemGDPL(ItemTypeEnum.TYPE_CARD_SKIN, detail, particular, level)
-              ?? await Player.InventoryManager!.AddSkinItem(ItemTypeEnum.TYPE_CARD_SKIN, detail, particular, level);
+        var skinInfo = Player.InventoryManager!.GetNormalItemGDPL(ItemTypeEnum.TYPE_CARD_SKIN, detail, particular, level)
+              ?? await Player.InventoryManager!.AddSkinItem(ItemTypeEnum.TYPE_CARD_SKIN, detail, particular, level, false);
         if (skinInfo != null) character.SkinId = skinInfo.UniqueId;
 
         if (sendPacket) await Player.SendPacket(new PacketNtfCallScript([character]));
@@ -75,7 +74,8 @@ public class CharacterManager(PlayerInstance player) : BasePlayerManager(player)
                         (ItemTypeEnum)cardData.DefaultWeaponGPDL[0],
                         cardData.DefaultWeaponGPDL[1],
                         cardData.DefaultWeaponGPDL[2],
-                        cardData.DefaultWeaponGPDL[3]);
+                        cardData.DefaultWeaponGPDL[3],
+                        sendPacket:false);
                     if (weapon != null)
                     {
                         character.WeaponUniqueId = weapon.UniqueId;
