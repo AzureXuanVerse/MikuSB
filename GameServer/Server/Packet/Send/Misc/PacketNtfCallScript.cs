@@ -1,6 +1,6 @@
 ﻿using MikuSB.Database.Character;
 using MikuSB.Database.Inventory;
-using MikuSB.GameServer.Game.Inventory;
+using MikuSB.GameServer.Game.Player;
 using MikuSB.Proto;
 using MikuSB.TcpSharp;
 
@@ -82,6 +82,35 @@ public class PacketNtfCallScript : BasePacket
         foreach (var weapon in inventory.Weapons.Values) extraSync.Items.Add(weapon.ToProto());
         foreach (var supportCard in inventory.SupportCards.Values) extraSync.Items.Add(supportCard.ToProto());
         proto.ExtraSync = extraSync;
+        SetData(proto);
+    }
+
+    public PacketNtfCallScript(PlayerInstance Player) : base(CmdIds.NtfScript)
+    {
+        Player.BuildPlayerAttr();
+        var proto = new NtfCallScript
+        {
+            Api = "",
+            Arg = "{}"
+        };
+        var sync = new NtfSyncPlayer();
+        foreach (var x in Player.Data.Attrs)
+        {
+            uint gid = x.Gid;
+            uint sid = x.Sid;
+            uint val = x.Val;
+
+            if (gid == 0)
+            {
+                sync.Custom[sid] = val;
+                continue;
+            }
+
+            sync.Custom[Player.ToPackedAttrKey(gid, sid)] = val;
+            sync.Custom[Player.ToShiftedAttrKey(gid, sid)] = val;
+        }
+        proto.ExtraSync = sync;
+
         SetData(proto);
     }
 }
