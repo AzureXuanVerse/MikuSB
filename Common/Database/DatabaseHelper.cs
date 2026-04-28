@@ -77,13 +77,17 @@ public class DatabaseHelper
 
         while (!res.IsCompleted)
         {
+            Thread.Sleep(100);
         }
 
         LastSaveTick = DateTime.UtcNow.Ticks;
 
-        SaveThread = new Thread(() =>
+        SaveThread = new Thread(async () =>
         {
-            while (true) CalcSaveDatabase();
+            while (true) {
+                CalcSaveDatabase();
+                await Task.Delay(100);
+            }
         });
         SaveThread.Start();
 
