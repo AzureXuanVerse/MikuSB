@@ -53,6 +53,7 @@ public class HandlerReqLogin : Handler
         await connection.Player.OnEnterGame();
         connection.Player.Connection = connection;
         await connection.SendPacket(new PacketRspLogin(connection.Player!));
+        await SendDebugLoginState(connection);
 
         await connection.Player.OnHeartBeat();
         await connection.SendPacket(new PacketNtfUpdateFriend(connection.Player!));
@@ -117,5 +118,15 @@ public class HandlerReqLogin : Handler
                 Items = { skinData.ToProto() }
             });
         }
+    }
+
+    private static async Task SendDebugLoginState(Connection connection)
+    {
+        var response = new JsonObject
+        {
+            ["IsDebug"] = ConfigManager.Config.ServerOption.EnableGmMenu
+        };
+
+        await CallGSRouter.SendScript(connection, "gm.notifylogin", response.ToJsonString());
     }
 }
