@@ -102,11 +102,6 @@ static void UpdateResources(string resourcePackagePath, string resourceTargetDir
     ZipFile.ExtractToDirectory(resourcePackagePath, resourceStagingDirectory, overwriteFiles: true);
 
     var extractedRoot = Directory.GetDirectories(resourceStagingDirectory).FirstOrDefault() ?? resourceStagingDirectory;
-    var excelOutputSource = Path.Combine(extractedRoot, "ExcelOutput");
-    if (!Directory.Exists(excelOutputSource))
-        throw new DirectoryNotFoundException($"ExcelOutput directory was not found in resource package: {excelOutputSource}");
-
-    var excelOutputTarget = Path.Combine(resourceTargetDirectory, "ExcelOutput");
-    Directory.CreateDirectory(excelOutputTarget);
-    CopyDirectory(excelOutputSource, excelOutputTarget);
+    Directory.CreateDirectory(resourceTargetDirectory);
+    CopyDirectory(extractedRoot, resourceTargetDirectory);
 }

@@ -24,8 +24,8 @@ public static class UpdateService
         "https://github.com/Kei-Luna/MikuSB-Resource/archive/refs/heads/main.zip";
     private static readonly string[] RequiredResourceFiles =
     [
-        "card.json",
-        "weapon.json"
+        "item/templates/card.json",
+        "item/templates/weapon.json"
     ];
 
     public static async Task<bool> TryStartSelfUpdateAsync()
@@ -160,11 +160,11 @@ public static class UpdateService
 
     private static bool AreRequiredResourcesPresent()
     {
-        var excelOutputPath = Path.Combine(AppContext.BaseDirectory, ConfigManager.Config.Path.ResourcePath, "ExcelOutput");
-        if (!Directory.Exists(excelOutputPath))
+        var resourcePath = Path.Combine(AppContext.BaseDirectory, ConfigManager.Config.Path.ResourcePath);
+        if (!Directory.Exists(resourcePath))
             return false;
 
-        return RequiredResourceFiles.All(fileName => File.Exists(Path.Combine(excelOutputPath, fileName)));
+        return RequiredResourceFiles.All(fileName => File.Exists(Path.Combine(resourcePath, fileName)));
     }
 
     private static async Task DownloadAndInstallResourcesAsync()
@@ -187,13 +187,8 @@ public static class UpdateService
         ZipFile.ExtractToDirectory(resourcePackagePath, resourceStagingDirectory, overwriteFiles: true);
 
         var extractedRoot = Directory.GetDirectories(resourceStagingDirectory).FirstOrDefault() ?? resourceStagingDirectory;
-        var excelOutputSource = Path.Combine(extractedRoot, "ExcelOutput");
-        if (!Directory.Exists(excelOutputSource))
-            throw new DirectoryNotFoundException($"ExcelOutput directory was not found in resource package: {excelOutputSource}");
-
-        var excelOutputTarget = Path.Combine(resourceTargetDirectory, "ExcelOutput");
-        Directory.CreateDirectory(excelOutputTarget);
-        CopyDirectory(excelOutputSource, excelOutputTarget);
+        Directory.CreateDirectory(resourceTargetDirectory);
+        CopyDirectory(extractedRoot, resourceTargetDirectory);
     }
 
     private static bool ConfirmUpdate(string latestVersion)
