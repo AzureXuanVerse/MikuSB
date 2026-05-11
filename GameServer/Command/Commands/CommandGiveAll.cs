@@ -258,4 +258,40 @@ public class CommandGiveAll : ICommands
         await arg.SendMsg(I18NManager.Translate("Game.Command.GiveAll.GiveAllItems",
             I18NManager.Translate("Word.WeaponPart"), weaponPartItems.Count.ToString()));
     }
+
+    [CommandMethod("skin")]
+    public async ValueTask GiveAllSkin(CommandArg arg)
+    {
+        if (!await arg.CheckOnlineTarget()) return;
+        if (await arg.GetOption('p') is not int particular) return;
+        if (await arg.GetOption('l') is not int level) return;
+        if (await arg.GetOption('g') is not int genre) return;
+
+        var detail = arg.GetInt(0);
+        var player = arg.Target!.Player!;
+        List<GameSkinInfo> skinItems = [];
+        if (detail == -1)
+        {
+            // add all
+            foreach (var config in GameData.CardSkinData.Values)
+            {
+                var skin = await player.InventoryManager!
+                    .AddSkinItem((ItemTypeEnum)config.Genre, config.Detail, config.Particular, config.Level, false);
+                if (skin != null) skinItems.Add(skin);
+            }
+        }
+        else
+        {
+            var skin = await player.InventoryManager!.AddSkinItem((ItemTypeEnum)genre, (uint)detail, (uint)particular, (uint)level, false);
+            if (skin == null)
+            {
+                await arg.SendMsg(I18NManager.Translate("Game.Command.GiveAll.NotFound", I18NManager.Translate("Word.Skin")));
+                return;
+            }
+            skinItems.Add(skin);
+        }
+        if (skinItems.Count > 0) await player.SendPacket(new PacketNtfCallScript(skinItems));
+        await arg.SendMsg(I18NManager.Translate("Game.Command.GiveAll.GiveAllItems",
+            I18NManager.Translate("Word.Skin"), skinItems.Count.ToString()));
+    }
 }
