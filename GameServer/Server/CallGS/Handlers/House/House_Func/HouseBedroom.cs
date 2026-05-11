@@ -12,9 +12,15 @@ public class GirlRegister : IHouseFuncHandler
         if (root == null) return;
 
         var girlId = HouseJson.NumField(root, "GirlId");
+        var floorId = HouseJson.NumField(root, "FloorId");
         var sync = new NtfSyncPlayer();
         if (girlId > 0)
+        {
+            var bedroomSid = HouseAttr.GetNextBedroomSid(connection.Player!, (uint)floorId);
             await HouseAttr.SetAsync(connection, HouseAttr.GirlRoomNumSid(girlId), HouseAttr.BedroomRegisteredNoRoom, sync);
+            if (bedroomSid != 0)  await HouseAttr.SetAsync(connection, bedroomSid, (uint)girlId, sync);
+        }
+            
 
         await CallGSRouter.SendScript(connection, "House_Request", HouseRequestScript.Synthesize(root), sync);
     }

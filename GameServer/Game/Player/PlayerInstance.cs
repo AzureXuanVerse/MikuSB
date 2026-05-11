@@ -375,6 +375,9 @@ public class PlayerInstance(PlayerGameData data)
             yield return (4, guide.ID, 999);
         }
 
+        for (uint favor = 1; favor <= 50; favor++)
+            yield return (101, favor * 50, 500);
+
         // Main Scene 0 mean default scene
         yield return (132, 1, 0);
     }

@@ -105,6 +105,7 @@ internal static class HouseAttr
     internal const uint BedroomStartSid = 2550;
     internal const uint BedroomRegisteredNoRoom = 100;
     internal const uint PlayerRingInfoSidBase = 3174;
+    internal const uint BedroomPerFloor = 8;
 
     internal static uint Read(PlayerInstance player, uint sid)
     {
@@ -173,6 +174,25 @@ internal static class HouseAttr
                 await SetAsync(connection, GirlRoomNumSid((int)occupant), BedroomRegisteredNoRoom, sync);
             }
         }
+    }
+
+    internal static uint GetNextBedroomSid(PlayerInstance player, uint floorId)
+    {
+        var floorStartSid = BedroomStartSid + ((floorId - 2) * BedroomPerFloor) + 1;
+
+        for (uint i = 0; i < BedroomPerFloor; i++)
+        {
+            var sid = floorStartSid + i;
+
+            var exists = player.Data.Attrs.Any(x =>
+                x.Gid == Gid &&
+                x.Sid == sid);
+
+            if (!exists)
+                return sid;
+        }
+
+        return 0;
     }
 
     internal static uint PackArcadePropUse(int type, int id, ushort count) =>
