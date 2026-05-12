@@ -41,8 +41,7 @@
   },
   "Proxy": {
     "Enabled": true,
-    "Port": 18888,
-    "ServerHttpPort": 21500
+    "Port": 18888
   },
   "Loader": {
     "GamePath": "",

@@ -88,7 +88,6 @@ public class ProxyOptions
 {
     public bool Enabled { get; set; } = true;
     public int Port { get; set; } = 18888;
-    public int ServerHttpPort { get; set; } = 21500;
 }
 
 public class LoaderOptions

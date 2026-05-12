@@ -193,7 +193,7 @@ public sealed class ProxyServer(
 
         return ("127.0.0.1", request.Port switch
         {
-            80 => _options.ServerHttpPort,
+            80 => ConfigManager.Config.HttpServer.Port,
             893 => 31443,
             13443 => 13443,
             18443 => 18443,
