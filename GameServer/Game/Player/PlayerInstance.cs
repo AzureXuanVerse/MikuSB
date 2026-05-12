@@ -288,9 +288,10 @@ public class PlayerInstance(PlayerGameData data)
         return (gid << 16) | sid;
     }
 
-    public void BuildPlayerAttr()
+    public void BuildPlayerAttr(bool additional = false)
     {
-        var bootstrapAttrs = BuildLobbyBootstrapAttrs();
+        var bootstrapAttrs = BuildLobbyBootstrapAttrs().ToList();
+        if (additional) bootstrapAttrs.AddRange(BuildGirlFurnitureAttrs());
         var existingAttrs = Data.Attrs
             .ToDictionary(x => (x.Gid, x.Sid));
         var seenAttrs = new HashSet<(uint Gid, uint Sid)>();
@@ -317,6 +318,24 @@ public class PlayerInstance(PlayerGameData data)
 
             Data.Attrs.Add(newAttr);
             existingAttrs[(gid, sid)] = newAttr;
+        }
+    }
+
+    private static IEnumerable<(uint Gid, uint Sid, uint Value)> BuildGirlFurnitureAttrs()
+    {
+        // Unlock some furniture slots for every girl
+        // Each furniture attr int stores 10 slots using 3 bits per slot
+        // Value below means slot 0..9 = 1
+        const uint furnitureUnlockedValue = 153391689;
+
+        for (uint girlId = 0; girlId <= 50; girlId++)
+        {
+            // FurnitureStart..FurnitureEnd = 10..19
+            for (uint offset = 10; offset <= 19; offset++)
+            {
+                uint sid = (girlId * 50) + offset;
+                yield return (101, sid, furnitureUnlockedValue);
+            }
         }
     }
 
@@ -375,7 +394,7 @@ public class PlayerInstance(PlayerGameData data)
             yield return (4, guide.ID, 999);
         }
 
-        for (uint favor = 1; favor <= 50; favor++)
+        for (uint favor = 0; favor <= 50; favor++)
             yield return (101, favor * 50, 500);
 
         // Main Scene 0 mean default scene

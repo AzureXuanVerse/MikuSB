@@ -35,6 +35,7 @@ public class ServerTextCHT
 /// </summary>
 public class WordTextCHT
 {
+    public string Furniture => "傢俱";
     public string Skin => "皮膚";
     public string WeaponPart => "武器部件";
     public string CallItem => "召喚道具";

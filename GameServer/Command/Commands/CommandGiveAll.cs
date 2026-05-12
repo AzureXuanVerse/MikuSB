@@ -294,4 +294,40 @@ public class CommandGiveAll : ICommands
         await arg.SendMsg(I18NManager.Translate("Game.Command.GiveAll.GiveAllItems",
             I18NManager.Translate("Word.Skin"), skinItems.Count.ToString()));
     }
+
+    [CommandMethod("furniture")]
+    public async ValueTask GiveAllHouseFurniture(CommandArg arg)
+    {
+        if (!await arg.CheckOnlineTarget()) return;
+        if (await arg.GetOption('p') is not int particular) return;
+        if (await arg.GetOption('l') is not int level) return;
+        if (await arg.GetOption('g') is not int genre) return;
+
+        var detail = arg.GetInt(0);
+        var player = arg.Target!.Player!;
+        List<BaseGameItemInfo> furnitureItems = [];
+        if (detail == -1)
+        {
+            // add all
+            foreach (var config in GameData.DormGiftData.Values)
+            {
+                var furniture = await player.InventoryManager!
+                    .AddHouseFurnitureItem((ItemTypeEnum)config.Genre, config.Detail, config.Particular, config.Level, false);
+                if (furniture != null) furnitureItems.Add(furniture);
+            }
+        }
+        else
+        {
+            var furniture = await player.InventoryManager!.AddHouseFurnitureItem((ItemTypeEnum)genre, (uint)detail, (uint)particular, (uint)level, false);
+            if (furniture == null)
+            {
+                await arg.SendMsg(I18NManager.Translate("Game.Command.GiveAll.NotFound", I18NManager.Translate("Word.Furniture")));
+                return;
+            }
+            furnitureItems.Add(furniture);
+        }
+        if (furnitureItems.Count > 0) await player.SendPacket(new PacketNtfCallScript(furnitureItems));
+        await arg.SendMsg(I18NManager.Translate("Game.Command.GiveAll.GiveAllItems",
+            I18NManager.Translate("Word.Furniture"), furnitureItems.Count.ToString()));
+    }
 }

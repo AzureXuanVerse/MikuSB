@@ -333,4 +333,25 @@ public class InventoryManager(PlayerInstance player) : BasePlayerManager(player)
 
         return weaponPartInfo;
     }
+
+    public async ValueTask<BaseGameItemInfo?> AddHouseFurnitureItem(ItemTypeEnum genre, uint detail, uint particular, uint level = 1, bool sendPacket = true)
+    {
+        if (genre != ItemTypeEnum.TYPE_HOUSE) return null;
+        var houseFurnitureData = GameData.DormGiftData.Values.FirstOrDefault(x => x.Genre == (int)genre && x.Detail == detail && x.Particular == particular && x.Level == level);
+        if (houseFurnitureData == null) return null;
+        var templateId = GameResourceTemplateId.FromGdpl((uint)genre, detail, particular, level);
+        if (InventoryData.Items.Values.Any(x => x.TemplateId == templateId)) return null;
+        var furnitureInfo = new BaseGameItemInfo
+        {
+            TemplateId = templateId,
+            UniqueId = InventoryData.NextUniqueUid++,
+            ItemType = genre,
+            ItemCount = 1
+        };
+        InventoryData.Items[furnitureInfo.UniqueId] = furnitureInfo;
+
+        if (sendPacket) await Player.SendPacket(new PacketNtfCallScript([furnitureInfo]));
+
+        return furnitureInfo;
+    }
 }

@@ -102,7 +102,7 @@ public class PacketNtfCallScript : BasePacket
 
     public PacketNtfCallScript(PlayerInstance Player) : base(CmdIds.NtfScript)
     {
-        Player.BuildPlayerAttr();
+        Player.BuildPlayerAttr(true);
         var proto = new NtfCallScript
         {
             Api = "",

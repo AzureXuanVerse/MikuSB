@@ -53,6 +53,7 @@ public class HandlerReqLogin : Handler
         await connection.Player.OnEnterGame();
         connection.Player.Connection = connection;
         await connection.SendPacket(new PacketRspLogin(connection.Player!));
+        await connection.SendPacket(new PacketNtfCallScript(connection.Player!));
         await SendDebugLoginState(connection);
 
         await connection.Player.OnHeartBeat();

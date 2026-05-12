@@ -35,6 +35,7 @@ public class ServerTextEN
 /// </summary>
 public class WordTextEN
 {
+    public string Furniture => "Furniture";
     public string Skin => "Skin";
     public string WeaponPart => "Weapon Part";
     public string CallItem => "Call Item";
