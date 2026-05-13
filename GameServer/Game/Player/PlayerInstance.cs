@@ -344,15 +344,32 @@ public class PlayerInstance(PlayerGameData data)
         {
             var baseSid = girlId * 50;
             for (uint offset = 10; offset <= 19; offset++)
-            {
                 yield return (101, baseSid + offset, furnitureUnlockedValue);
-            }
 
             if (groupFurnitureByArea.TryGetValue(girlId, out var groupValue))
-            {
                 yield return (101, baseSid + 20, groupValue);
-            }
         }
+
+        // Massage room furniture
+        // 10010..10019
+        for (uint sid = 10010; sid <= 10019; sid++)
+            yield return (101, sid, furnitureUnlockedValue);
+
+        // Massage room group state
+        yield return (101, 10020, 1);
+
+        // Hot spring furniture
+        // 15001..15010
+        for (uint sid = 15001; sid <= 15010; sid++)
+            yield return (101, sid, furnitureUnlockedValue);
+
+        // Beach furniture
+        // 17101..17110
+        for (uint sid = 17101; sid <= 17110; sid++)
+            yield return (101, sid, furnitureUnlockedValue);
+
+        for (uint sid = 30000; sid < 31000; sid++)
+            yield return (101, sid, furnitureUnlockedValue);
     }
 
     private static IEnumerable<(uint Gid, uint Sid, uint Value)> BuildLobbyBootstrapAttrs()
