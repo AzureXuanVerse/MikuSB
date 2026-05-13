@@ -12,6 +12,7 @@ public class BasePacket
     public long Timestamp { get; set; }
     public IMessage? Message { get; set; }
     public PacketFraming Framing { get; set; }
+    public int UncompressedBodySize { get; set; }
 
     public BasePacket(ushort cmdId)
     {

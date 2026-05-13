@@ -2,6 +2,7 @@
 using MikuSB.Enums.Packet;
 using MikuSB.Util;
 using System.Buffers.Binary;
+using System.IO.Compression;
 using System.Net.Sockets;
 
 namespace MikuSB.TcpSharp
@@ -63,11 +64,11 @@ namespace MikuSB.TcpSharp
             }
         }
 
-        public byte[] Encode(ushort packetId, byte[] payload, PacketFraming framing = PacketFraming.FourByteLittleEndianLength)
+        public byte[] Encode(ushort packetId, byte[] payload, PacketFraming framing = PacketFraming.FourByteLittleEndianLength, int uncompressedSize = 0)
         {
             return framing switch
             {
-                PacketFraming.TwoByteBigEndianLength => EncodeTwoByteFrame(packetId, payload),
+                PacketFraming.TwoByteBigEndianLength => EncodeTwoByteFrame(packetId, payload, uncompressedSize),
                 PacketFraming.FourByteLittleEndianLength => EncodeFourByteFrame(packetId, payload),
                 _ => EncodeFourByteFrame(packetId, payload)
             };
@@ -220,8 +221,20 @@ namespace MikuSB.TcpSharp
             return payload;
         }
 
-        private byte[] EncodeTwoByteFrame(ushort packetId, byte[] payload)
+        private const int CompressionThreshold = 60000;
+
+        private static byte[] ZlibCompress(byte[] data)
         {
+            using var ms = new MemoryStream();
+            using (var zlib = new ZLibStream(ms, CompressionLevel.Optimal, leaveOpen: true))
+                zlib.Write(data, 0, data.Length);
+            return ms.ToArray();
+        }
+
+        private byte[] EncodeTwoByteFrame(ushort packetId, byte[] payload, int uncompressedSize = 0)
+        {
+            if (payload.Length > CompressionThreshold)
+                payload = ZlibCompress(payload);
             var wrappedPayload = WrapPayload(payload);
             var buffer = new byte[HeaderSize4Byte + wrappedPayload.Length];
 
@@ -246,7 +259,9 @@ namespace MikuSB.TcpSharp
             const int wrapperHeaderSize = 35;
             var wrapped = new byte[wrapperHeaderSize + payload.Length];
             BinaryPrimitives.WriteUInt16LittleEndian(wrapped.AsSpan(6, 2), (ushort)payload.Length);
-            wrapped[11] = 1;
+            if (payload.Length >= 2 && payload[0] == 0x78 &&
+                (payload[1] == 0x01 || payload[1] == 0x5E || payload[1] == 0x9C || payload[1] == 0xDA))
+                wrapped[10] = 2;
             payload.CopyTo(wrapped.AsSpan(wrapperHeaderSize));
 
             return wrapped;

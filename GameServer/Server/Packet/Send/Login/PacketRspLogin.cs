@@ -22,7 +22,7 @@ public class PacketRspLogin : BasePacket
         };
 
         var bytes = Google.Protobuf.MessageExtensions.ToByteArray(proto);
-        Logger.Info($"RspLogin proto size: {bytes.Length} bytes (limit: 65535)");
+        Logger.Info($"RspLogin proto size: {bytes.Length} bytes");
 
         SetData(bytes);
     }
