@@ -87,7 +87,6 @@ public class HandlerReqLogin : Handler
         await connection.Player.OnHeartBeat();
         await connection.SendPacket(new PacketNtfUpdateFriend(connection.Player!));
         ApplySavedGirlSkinTypes(connection.Player!);
-        await connection.SendPacket(new PacketNtfCallScript(connection.Player!.InventoryManager.InventoryData));
         await SendGirlSkinTypeOnLogin(connection);
     }
 

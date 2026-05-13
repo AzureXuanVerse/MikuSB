@@ -214,6 +214,10 @@ public class PlayerInstance(PlayerGameData data)
         };
 
         foreach (var chara in CharacterManager.CharacterData.Characters) proto.Items.Add(chara.ToProto());
+        foreach (var item in InventoryManager.InventoryData.Items.Values) proto.Items.Add(item.ToProto());
+        foreach (var skin in InventoryManager.InventoryData.Skins.Values) proto.Items.Add(skin.ToProto());
+        foreach (var weapon in InventoryManager.InventoryData.Weapons.Values) proto.Items.Add(weapon.ToProto());
+        foreach (var card in InventoryManager.InventoryData.SupportCards.Values) proto.Items.Add(card.ToProto());
         foreach (var x in Data.Attrs)
         {
             uint gid = x.Gid;
