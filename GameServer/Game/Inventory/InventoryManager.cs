@@ -4,6 +4,7 @@ using MikuSB.Database;
 using MikuSB.Database.Inventory;
 using MikuSB.Enums.Item;
 using MikuSB.GameServer.Game.Player;
+using MikuSB.GameServer.Game.Support;
 using MikuSB.GameServer.Server.Packet.Send.Misc;
 
 namespace MikuSB.GameServer.Game.Inventory;
@@ -135,7 +136,17 @@ public class InventoryManager(PlayerInstance player) : BasePlayerManager(player)
             ItemType = genre,
             ItemCount = 1,
             Level = cardLevel,
+            AffixId = 1,
         };
+
+        var initialCount = spCard.InitialAffixCount;
+        for (int i = 0; i < initialCount && i < spCard.AffixPool.Count; i++)
+        {
+            var (affixId, tier) = SupportAffixService.GenerateRandomAffix(spCard.AffixPool[i]);
+            info.Affixs.Add(affixId);
+            info.Affixs.Add(tier);
+        }
+
         InventoryData.SupportCards[info.UniqueId] = info;
 
         if (sendPacket) await Player.SendPacket(new PacketNtfCallScript([info]));

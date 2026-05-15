@@ -1,5 +1,6 @@
 using MikuSB.Data;
 using MikuSB.Database;
+using MikuSB.GameServer.Game.Support;
 using MikuSB.Proto;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -81,6 +82,23 @@ public class SupporterCard_Upgrade : ICallGSHandler
         {
             supportCard.Exp = 0;
             supportCard.Level = maxLevel;
+
+            // Unlock next affix slot when reaching max level for the first time
+            if (supportCardExcel != null)
+            {
+                var currentSlots = supportCard.Affixs.Count / 2;
+                var totalSlots = supportCardExcel.TotalAffixCount;
+                if (currentSlots < totalSlots && currentSlots < supportCardExcel.AffixPool.Count)
+                {
+                    var poolId = supportCardExcel.AffixPool[currentSlots];
+                    var (affixId, tier) = SupportAffixService.GenerateRandomAffix(poolId);
+                    if (affixId > 0)
+                    {
+                        supportCard.Affixs.Add(affixId);
+                        supportCard.Affixs.Add(tier);
+                    }
+                }
+            }
         }
 
         syncItems.Add(supportCard.ToProto());

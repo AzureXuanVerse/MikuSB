@@ -23,6 +23,8 @@ public static class GameData
     public static Dictionary<uint, SpineExcel> SpineData { get; private set; } = [];
     public static Dictionary<uint, NodeConditionExcel> NodeConditionData { get; private set; } = [];
     public static List<SupportCardExcel> SupportCardData { get; private set; } = [];
+    public static Dictionary<int, SupportAffixExcel> SupportAffixData { get; private set; } = [];
+    public static Dictionary<int, SupportAffixPoolExcel> SupportAffixPoolData { get; private set; } = [];
     public static Dictionary<uint, WeaponSkinExcel> WeaponSkinData { get; private set; } = [];
     public static Dictionary<uint, DailyLevelExcel> DailyLevelData { get; private set; } = [];
     public static Dictionary<uint, ProfileExcel> ProfileData { get; private set; } = [];
