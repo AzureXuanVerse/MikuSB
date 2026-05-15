@@ -22,16 +22,35 @@ public class LoaderManager : MikuSB
     public static void InitConfig()
     {
         // Initialize log
-        var counter = 0;
-        FileInfo file;
-        while (true)
+        var logDir = ConfigManager.Config.Path.LogPath;
+        var logFile = new FileInfo(Path.Combine(logDir, "Server.log"));
+        logFile.Directory?.Create();
+
+        if (logFile.Exists)
         {
-            file = new FileInfo(ConfigManager.Config.Path.LogPath + $"/{DateTime.Now:yyyy-MM-dd}-{++counter}.log");
-            if (file is not { Exists: false, Directory: not null }) continue;
-            file.Directory.Create();
-            break;
+            // Read start time from first log line, fall back to file creation time
+            DateTime logStartTime;
+            try
+            {
+                var firstLine = File.ReadLines(logFile.FullName).FirstOrDefault() ?? "";
+                // Format: [HH:mm:ss] ...
+                var timeStr = firstLine.Length >= 10 ? firstLine[1..9] : "";
+                var dateStr = logFile.CreationTime.ToString("yyyy-MM-dd");
+                logStartTime = DateTime.TryParse($"{dateStr} {timeStr}", out var parsed)
+                    ? parsed
+                    : logFile.CreationTime;
+            }
+            catch
+            {
+                logStartTime = logFile.CreationTime;
+            }
+
+            var backupName = $"Server-backup-{logStartTime:yyyy.MM.dd-HH.mm.ss}.log";
+            var backupFile = new FileInfo(Path.Combine(logDir, backupName));
+            logFile.MoveTo(backupFile.FullName, overwrite: true);
         }
-        Logger.SetLogFile(file);
+
+        Logger.SetLogFile(new FileInfo(Path.Combine(logDir, "Server.log")));
 
         // Init all directories
         try
