@@ -139,10 +139,11 @@ public class InventoryManager(PlayerInstance player) : BasePlayerManager(player)
             AffixId = 1,
         };
 
-        var initialCount = spCard.InitialAffixCount;
-        for (int i = 0; i < initialCount && i < spCard.AffixPool.Count; i++)
+        var affixCount = cardLevel >= spCard.MaxLevel ? spCard.TotalAffixCount : spCard.InitialAffixCount;
+        for (int i = 0; i < affixCount && i < spCard.AffixPool.Count; i++)
         {
             var (affixId, tier) = SupportAffixService.GenerateRandomAffix(spCard.AffixPool[i]);
+            if (affixId == 0) continue;
             info.Affixs.Add(affixId);
             info.Affixs.Add(tier);
         }
