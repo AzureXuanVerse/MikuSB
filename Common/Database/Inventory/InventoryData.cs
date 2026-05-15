@@ -106,6 +106,8 @@ public class GameSkinInfo : BaseGameItemInfo
 public class GameSupportCardInfo : BaseGameItemInfo
 {
     public uint AffixId { get; set; }
+    [SugarColumn(IsJson = true)] public List<uint> Affixs { get; set; } = [];
+
     public override Item ToProto()
     {
         var proto = new Item
@@ -120,6 +122,7 @@ public class GameSupportCardInfo : BaseGameItemInfo
                 Exp = Exp
             }
         };
+        proto.Enhance.Affixs.AddRange(Affixs);
         proto.Slots[(uint)ItemSupportCardSlotTypeEnum.SLOT_AFFIXINDEX] = AffixId;
         return proto;
     }
