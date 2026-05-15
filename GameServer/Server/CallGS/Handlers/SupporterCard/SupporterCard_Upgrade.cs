@@ -19,7 +19,7 @@ public class SupporterCard_Upgrade : ICallGSHandler
             return;
         }
 
-        var supportCard = player.InventoryManager.InventoryData.Items.GetValueOrDefault((uint)req.SupportCardUid);
+        var supportCard = player.InventoryManager.GetSupportCardItem((uint)req.SupportCardUid);
         if (supportCard == null)
         {
             await CallGSRouter.SendScript(connection, "Logistics_Upgrade", "{}");
@@ -68,10 +68,11 @@ public class SupporterCard_Upgrade : ICallGSHandler
         }
 
         // Apply exp and level up
+        if (supportCard.Level == 0) supportCard.Level = 1;
         supportCard.Exp += gainedExp;
         while (supportCard.Level < maxLevel)
         {
-            var expNeeded = GetExpNeeded(supportCard.Level + 1);
+            var expNeeded = GetExpNeeded(supportCard.Level);
             if (expNeeded == 0 || supportCard.Exp < expNeeded) break;
             supportCard.Exp -= expNeeded;
             supportCard.Level++;
