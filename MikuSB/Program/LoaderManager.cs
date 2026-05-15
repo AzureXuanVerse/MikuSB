@@ -6,6 +6,7 @@ using MikuSB.GameServer.Server;
 using MikuSB.GameServer.Server.CallGS;
 using MikuSB.GameServer.Server.Packet;
 using MikuSB.Internationalization;
+using MikuSB.Loader;
 using MikuSB.MikuSB.Tool;
 using MikuSB.MikuSB.Update;
 using MikuSB.Proto;
@@ -73,6 +74,7 @@ public class LoaderManager : MikuSB
         try
         {
             ConfigManager.LoadConfig();
+            GamePathResolver.TryPersistAutoDetectedGamePath();
         }
         catch (Exception e)
         {

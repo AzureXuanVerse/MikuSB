@@ -294,7 +294,8 @@ public sealed class LaunchOptions
     {
         var config = ConfigManager.Config;
         var serverBaseDirectory = AppContext.BaseDirectory;
-        var gamePath = ResolvePath(config.Loader.GamePath, AppContext.BaseDirectory);
+        GamePathResolver.TryPersistAutoDetectedGamePath();
+        var gamePath = GamePathResolver.Resolve(config.Loader.GamePath, serverBaseDirectory);
         var patchPaths = ResolvePatchPaths(config.Loader.PatchPaths, serverBaseDirectory);
         var gameArgs = new List<string>(config.Loader.Arguments ?? []);
         if (extraGameArguments is not null)
