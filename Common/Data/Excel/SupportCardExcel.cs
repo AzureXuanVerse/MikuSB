@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MikuSB.Data.Excel;
 
@@ -14,6 +15,9 @@ public class SupportCardExcel : ExcelResource
     public uint Color { get; set; }
     [JsonProperty("LevelLimitID")] public int LevelLimitId { get; set; }
     [JsonProperty("AffixPool")] public List<int> AffixPool { get; set; } = [];
+    [JsonProperty("AffixCost")] public JToken? AffixCostRaw { get; set; }
+    [JsonProperty("InitialAffixCost")] public JToken? InitialAffixCostRaw { get; set; }
+    [JsonProperty("FixedAffixCost")] public JToken? FixedAffixCostRaw { get; set; }
 
     public uint MaxLevel => LevelLimitId switch
     {
@@ -23,11 +27,18 @@ public class SupportCardExcel : ExcelResource
         _ => 10
     };
 
-    // Number of affixes granted initially
     public int InitialAffixCount => Color >= 5 ? 2 : 1;
 
-    // Total maximum affixes (including ones unlocked at max level)
     public int TotalAffixCount => Color >= 5 ? 3 : 2;
+
+    [JsonIgnore]
+    public IReadOnlyList<uint> AffixCost => ParseFlatCost(AffixCostRaw);
+
+    [JsonIgnore]
+    public IReadOnlyList<IReadOnlyList<uint>> InitialAffixCost => ParseNestedCost(InitialAffixCostRaw);
+
+    [JsonIgnore]
+    public IReadOnlyList<uint> FixedAffixCost => ParseFlatCost(FixedAffixCostRaw);
 
     public ulong TemplateId => GameResourceTemplateId.FromGdpl(Genre, Detail, Particular, Level);
 
@@ -36,5 +47,24 @@ public class SupportCardExcel : ExcelResource
     public override void Loaded()
     {
         GameData.SupportCardData.Add(this);
+    }
+
+    private static IReadOnlyList<uint> ParseFlatCost(JToken? token)
+    {
+        if (token is not JArray array)
+            return [];
+
+        return array.Select(x => x.Value<uint>()).ToArray();
+    }
+
+    private static IReadOnlyList<IReadOnlyList<uint>> ParseNestedCost(JToken? token)
+    {
+        if (token is not JArray outer)
+            return [];
+
+        var result = new List<IReadOnlyList<uint>>();
+        foreach (var entry in outer.OfType<JArray>())
+            result.Add(entry.Select(x => x.Value<uint>()).ToArray());
+        return result;
     }
 }

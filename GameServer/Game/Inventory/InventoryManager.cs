@@ -136,7 +136,7 @@ public class InventoryManager(PlayerInstance player) : BasePlayerManager(player)
             ItemType = genre,
             ItemCount = 1,
             Level = cardLevel,
-            AffixId = 1,
+            AffixId = 0,
         };
 
         var affixCount = cardLevel >= spCard.MaxLevel ? spCard.TotalAffixCount : spCard.InitialAffixCount;
@@ -144,8 +144,7 @@ public class InventoryManager(PlayerInstance player) : BasePlayerManager(player)
         {
             var (affixId, tier) = SupportAffixService.GenerateRandomAffix(spCard.AffixPool[i]);
             if (affixId == 0) continue;
-            info.Affixs.Add(affixId);
-            info.Affixs.Add(tier);
+            SupportAffixStateService.SetAffix(info, i + 1, affixId, tier);
         }
 
         InventoryData.SupportCards[info.UniqueId] = info;
