@@ -86,17 +86,15 @@ public class SupporterCard_Upgrade : ICallGSHandler
             // Unlock next affix slot when reaching max level for the first time
             if (supportCardExcel != null)
             {
-                var currentSlots = supportCard.Affixs.Count / 2;
+                var currentSlots = Enumerable.Range(1, SupportAffixStateService.ActiveThirdAffixSlot)
+                    .Count(slot => SupportAffixStateService.HasAffix(supportCard, slot));
                 var totalSlots = supportCardExcel.TotalAffixCount;
                 if (currentSlots < totalSlots && currentSlots < supportCardExcel.AffixPool.Count)
                 {
                     var poolId = supportCardExcel.AffixPool[currentSlots];
                     var (affixId, tier) = SupportAffixService.GenerateRandomAffix(poolId);
                     if (affixId > 0)
-                    {
-                        supportCard.Affixs.Add(affixId);
-                        supportCard.Affixs.Add(tier);
-                    }
+                        SupportAffixStateService.SetAffix(supportCard, currentSlots + 1, affixId, tier);
                 }
             }
         }

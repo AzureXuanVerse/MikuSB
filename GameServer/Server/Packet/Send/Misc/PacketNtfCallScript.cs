@@ -1,6 +1,8 @@
-﻿using MikuSB.Database.Character;
+using MikuSB.Database.Character;
 using MikuSB.Database.Inventory;
+using MikuSB.Enums.Item;
 using MikuSB.GameServer.Game.Player;
+using MikuSB.GameServer.Game.Support;
 using MikuSB.Proto;
 using MikuSB.TcpSharp;
 
@@ -10,14 +12,14 @@ public class PacketNtfCallScript : BasePacket
 {
     public PacketNtfCallScript(List<CharacterInfo> characters) : base(CmdIds.NtfScript)
     {
-        var proto = new NtfCallScript 
-        { 
+        var proto = new NtfCallScript
+        {
             Api = "",
             Arg = "{}",
             ExtraSync = new NtfSyncPlayer
             {
                 Items = { characters.Select(x => x.ToProto()) }
-            } 
+            }
         };
 
         SetData(proto);
@@ -61,7 +63,7 @@ public class PacketNtfCallScript : BasePacket
             Arg = "{}",
             ExtraSync = new NtfSyncPlayer
             {
-                Items = { cards.Select(x => x.ToProto()) }
+                Items = { cards.Select(ToSupportCardProto) }
             }
         };
 
@@ -95,7 +97,7 @@ public class PacketNtfCallScript : BasePacket
         foreach (var item in inventory.Items.Values) extraSync.Items.Add(item.ToProto());
         foreach (var skin in inventory.Skins.Values) extraSync.Items.Add(skin.ToProto());
         foreach (var weapon in inventory.Weapons.Values) extraSync.Items.Add(weapon.ToProto());
-        foreach (var supportCard in inventory.SupportCards.Values) extraSync.Items.Add(supportCard.ToProto());
+        foreach (var supportCard in inventory.SupportCards.Values) extraSync.Items.Add(ToSupportCardProto(supportCard));
         proto.ExtraSync = extraSync;
         SetData(proto);
     }
@@ -127,5 +129,13 @@ public class PacketNtfCallScript : BasePacket
         proto.ExtraSync = sync;
 
         SetData(proto);
+    }
+
+    private static Item ToSupportCardProto(GameSupportCardInfo card)
+    {
+        SupportAffixStateService.NormalizePendingState(card);
+        var proto = card.ToProto();
+        proto.Slots[(uint)ItemSupportCardSlotTypeEnum.SLOT_AFFIXINDEX] = SupportAffixStateService.GetVisibleInitialAffixIndex(card);
+        return proto;
     }
 }

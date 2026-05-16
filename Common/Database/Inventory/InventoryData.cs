@@ -1,4 +1,4 @@
-﻿using MikuSB.Enums.Item;
+using MikuSB.Enums.Item;
 using MikuSB.Proto;
 using SqlSugar;
 
@@ -10,19 +10,19 @@ public class InventoryData : BaseDatabaseDataHelper
     public uint NextUniqueUid { get; set; } = 100000;
 
     [SugarColumn(IsJson = true)]
-    public Dictionary<uint, BaseGameItemInfo> Items { get; set; } = [];  // Key: UniqueId
+    public Dictionary<uint, BaseGameItemInfo> Items { get; set; } = [];
 
     [SugarColumn(IsJson = true)]
-    public Dictionary<uint, GameWeaponInfo> Weapons { get; set; } = [];  // Key: UniqueId
+    public Dictionary<uint, GameWeaponInfo> Weapons { get; set; } = [];
 
     [SugarColumn(IsJson = true)]
-    public Dictionary<uint, GameSkinInfo> Skins { get; set; } = [];  // Key: UniqueId
+    public Dictionary<uint, GameSkinInfo> Skins { get; set; } = [];
 
     [SugarColumn(IsJson = true)]
-    public Dictionary<uint, GameSupportCardInfo> SupportCards { get; set; } = [];  // Key: UniqueId
+    public Dictionary<uint, GameSupportCardInfo> SupportCards { get; set; } = [];
 
     [SugarColumn(IsJson = true)]
-    public Dictionary<uint, uint> SkinTypesBySkinId { get; set; } = [];  // Key: nSkinId, Value: client nType
+    public Dictionary<uint, uint> SkinTypesBySkinId { get; set; } = [];
 }
 
 public class BaseGameItemInfo
@@ -63,6 +63,7 @@ public abstract class GrowableItemInfo : BaseGameItemInfo
 public class GameWeaponInfo : GrowableItemInfo
 {
     [SugarColumn(IsJson = true)] public Dictionary<uint, ulong> PartSlots { get; set; } = [];
+
     public override Item ToProto()
     {
         var proto = new Item
@@ -79,14 +80,17 @@ public class GameWeaponInfo : GrowableItemInfo
                 Evolue = Evolue
             }
         };
-        foreach (var (slot, uid) in PartSlots) proto.Slots[slot] = uid;
+        foreach (var (slot, uid) in PartSlots)
+            proto.Slots[slot] = uid;
         return proto;
     }
 }
+
 public class GameSkinInfo : BaseGameItemInfo
 {
     [SugarColumn(IsJson = true)] public Dictionary<uint, ulong> PartSlots { get; set; } = [];
     public uint SkinType { get; set; }
+
     public override Item ToProto()
     {
         var proto = new Item
@@ -97,11 +101,11 @@ public class GameSkinInfo : BaseGameItemInfo
             Flag = (uint)Flag,
         };
         proto.Slots[(uint)ItemSkinSlotTypeEnum.SLOT_CARD_SKIL_TYPE] = Math.Min(SkinType, 1);
-        foreach (var (slot, uid) in PartSlots) proto.Slots[slot] = uid;
+        foreach (var (slot, uid) in PartSlots)
+            proto.Slots[slot] = uid;
         return proto;
     }
 }
-
 
 public class GameSupportCardInfo : BaseGameItemInfo
 {
